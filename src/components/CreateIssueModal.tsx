@@ -1,13 +1,19 @@
 "use client"
 
+import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react"
 import { createIssue } from "@/app/actions/issues"
+import toast, {Toast} from "react-hot-toast"
 
 export default function CreateIssueModal(){
     // State to control if modal is visible
     const [ isOpen,setIsOpen]= useState(false)
     const [isLoading,setIsLoading]=useState(false)
     const[error,setError]=useState<string | null>(null)
+
+    // 1. Initialize the router
+  const router = useRouter();
+  const pathname = usePathname();
 
     async function handleSubmit(e:React.SubmitEvent<HTMLFormElement>){
         e.preventDefault()
@@ -26,9 +32,10 @@ export default function CreateIssueModal(){
     }
     else{
         // If successful, close the modal. (The Server Action handles the redirect/refresh.)
-        setIsOpen(false)
+        toast.success("Closing")
         setIsLoading(false)
     }
+    router.replace(pathname)
     }
 
     return (

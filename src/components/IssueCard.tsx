@@ -2,6 +2,8 @@
 import StatusDropdown from "./StatusDropdown";
 import DeleteIssueButton from "./DeleteIssueButton";
 import AssigneeDropdown from "./AssigneeDropdown";
+import { useDraggable } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
 
 // We define the shape of the data so TypeScript can catch our typos
 type Issue = {
@@ -17,8 +19,17 @@ type Issue = {
 type Profile = { id: string; email: string; };
 
 export default function IssueCard({ issue,profiles }: { issue: Issue,profiles:Profile[] }) {
+  const{setNodeRef,listeners,attributes,transform} = useDraggable({
+    id:issue.id,
+    data:{...issue}
+  })
+
+  const style = {
+    // CSS.Translate.toString() converts the X/Y numbers into "translate3d(x, y, z)"
+    transform: CSS.Translate.toString(transform),
+  };
   return (
-    <div className="flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md">
+    <div className="flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md" ref={setNodeRef} style={style} {...listeners} {...attributes}>
       <div>
         <div className="mb-2 flex items-center justify-between">
           <span className="rounded bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-600">

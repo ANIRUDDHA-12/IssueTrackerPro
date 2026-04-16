@@ -1,7 +1,6 @@
-"use client"
-
 "use client";
 
+import { Toast } from "react-hot-toast";
 import { useTransition } from "react";
 import { updateIssue } from "@/app/actions/issues";
 

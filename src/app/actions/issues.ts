@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
-export type CreateIssueResult = {succes:boolean,error?:string}
+export type CreateIssueResult = {success:boolean,error?:string}
 
 export async function createIssue(formData:FormData){
     const title = formData.get('title') as string
@@ -51,7 +51,7 @@ export async function updateIssue(issueId:string,newStatus:string){
         return({success:false,error:error.message})
     }
         revalidatePath("/dashboard")
-    return {sucess:true}
+    return {success:true}
 }
 
 export async function deleteIssue(issueId:string){
