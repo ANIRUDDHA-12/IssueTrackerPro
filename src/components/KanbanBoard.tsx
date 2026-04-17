@@ -6,6 +6,7 @@ import { useState } from "react"
 import KanbanColumn from "./KanbanColumn"
 import { updateIssue } from "@/app/actions/issues";
 
+
 // We define the shape of the data so TypeScript can catch our typos
 type Issue = {
   id: string;
@@ -112,3 +113,4 @@ profiles:Profile[]
     </DndContext>
   )
 }
+

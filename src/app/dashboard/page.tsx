@@ -7,6 +7,7 @@ import DeleteIssueButton from "@/components/DeleteIssueButton";
 import IssueCard from "@/components/IssueCard";
 import BoardFilters from "@/components/BoardFilters";
 import KanbanBoard from "@/components/KanbanBoard";
+import Comments from "@/components/Comments";
 
 type SearchParams = Promise<{[key:string]:string | undefined}> 
 
@@ -15,12 +16,21 @@ export default async function DashboardPage(props:{searchParams:SearchParams}) {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
   const assignee = searchParams?.assignee || "";
+  const selectedIssueId = searchParams?.selectedIssue || null;
 
   const supabase = await createClient()
 
   let dbQuery = supabase
     .from("issues")
-    .select("*")
+    .select(`
+      *,
+      comments (
+        id,
+        content,
+        created_at,
+        profiles (email)
+      )
+    `)
     .order("created_at",{ascending:false})
 
     // 2. If there is a search term in the URL, filter titles using 'ilike' (case-insensitive match)
@@ -44,6 +54,10 @@ export default async function DashboardPage(props:{searchParams:SearchParams}) {
   const { data: profiles } = await supabase
     .from("profiles")
     .select("*");
+
+    const selectedIssueData = selectedIssueId 
+    ? issues?.find((issue) => issue.id === selectedIssueId) 
+    : null;
 
   // 2. The Data Sort (Filtering)
   //  safely default to empty arrays [] if 'issues' comes back null
@@ -81,6 +95,35 @@ export default async function DashboardPage(props:{searchParams:SearchParams}) {
         )}
 
         <KanbanBoard initialIssues={issues || []} profiles={profiles || []} />
+
+        {/* THE NEW ISSUE DETAILS MODAL OVERLAY */}
+        {selectedIssueData && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-2xl">
+               
+               <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold text-gray-900">{selectedIssueData.title}</h2>
+                  
+                  {/* The Close Button! */}
+                  <a 
+                    href="/dashboard" 
+                    className="text-gray-400 hover:text-gray-800 font-medium"
+                  >
+                    Close
+                  </a>
+               </div>
+               
+               <p className="text-gray-600 mb-6">{selectedIssueData.description}</p>
+               
+               {/* THE COMMENTS COMPONENT! */}
+               <Comments 
+                  issueId={selectedIssueData.id} 
+                  initialComments={selectedIssueData.comments || []} 
+               />
+               
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

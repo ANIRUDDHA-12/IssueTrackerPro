@@ -4,6 +4,7 @@ import DeleteIssueButton from "./DeleteIssueButton";
 import AssigneeDropdown from "./AssigneeDropdown";
 import { useDraggable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import { usePathname,useSearchParams,useRouter } from "next/navigation"
 
 // We define the shape of the data so TypeScript can catch our typos
 type Issue = {
@@ -19,11 +20,22 @@ type Issue = {
 type Profile = { id: string; email: string; };
 
 export default function IssueCard({ issue,profiles }: { issue: Issue,profiles:Profile[] }) {
+   const searchParams = useSearchParams()
+    const pathname = usePathname()
+    const{replace}=useRouter()
   const{setNodeRef,listeners,attributes,transform} = useDraggable({
     id:issue.id,
     data:{...issue}
   })
 
+  function handleOpenModal(e:React.MouseEvent<HTMLHeadElement>){
+    e.stopPropagation()
+    const params=new URLSearchParams(searchParams)
+    params.set("selectedIssue",issue.id)
+
+
+    replace(`${pathname}?${params.toString()}`)
+}
   const style = {
     // CSS.Translate.toString() converts the X/Y numbers into "translate3d(x, y, z)"
     transform: CSS.Translate.toString(transform),
@@ -38,7 +50,7 @@ export default function IssueCard({ issue,profiles }: { issue: Issue,profiles:Pr
           <StatusDropdown issueId={issue.id} currentStatus={issue.status} />
         </div>
         
-        <h3 className="mb-1 text-lg font-bold text-gray-900">{issue.title}</h3>
+        <h3 className="mb-1 text-lg font-bold text-gray-900 cursor-pointer hover:text-blue-600 hover:underline" onPointerDown={(e)=>{handleOpenModal(e)}}>{issue.title}</h3>
         <p className="mb-3 line-clamp-2 text-sm text-gray-500">{issue.description}</p>
         
         {/* The New Assignee Dropdown! */}
@@ -63,3 +75,7 @@ export default function IssueCard({ issue,profiles }: { issue: Issue,profiles:Pr
     </div>
   );
 }
+
+
+
+
