@@ -2,6 +2,7 @@
 import { createClient } from "@/utils/supabase/server"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { resend } from "@/utils/resend"
 
 export type CreateIssueResult = {success:boolean,error?:string}
 
@@ -79,13 +80,12 @@ export async function deleteIssue(issueId:string){
 export async function updateIssueAssignee(issueId: string, assigneeId: string | null) {
     const supabase = await createClient();
 
-    // 1. The Bouncer
+
     const { data, error: authError } = await supabase.auth.getUser();
     if (authError || !data.user) {
         return { success: false, error: "Unauthorized" };
     }
 
-    // 2. The Database Update
     const { error } = await supabase
         .from("issues")
         .update({ assigned_to: assigneeId })
@@ -95,7 +95,29 @@ export async function updateIssueAssignee(issueId: string, assigneeId: string | 
         return { success: false, error: error.message };
     }
 
+    const {data:profile,error:profileError} = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("id",assigneeId)
+        .single()
+    
+        if (profileError) {
+    console.error("Could not fetch profile for email notification.")
+  }
+
+    try{
+        await resend.emails.send({
+            from:"Issues Tracker <onboarding@resend.dev>",
+            to:"",
+            subject:"New Assignment",
+            html:"<p>Hello you've been assigned a new issue likewise.</p>"
+        })
+    }catch(emailError){
+        console.error("Resend error:", emailError)
+    }
     // 3. The Refresh
     revalidatePath("/dashboard");
     return { success: true };
+
+
 }
