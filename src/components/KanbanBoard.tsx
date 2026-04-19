@@ -2,9 +2,11 @@
 
 import { DndContext,DragEndEvent } from "@dnd-kit/core";
 import IssueCard from "./IssueCard"
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import KanbanColumn from "./KanbanColumn"
 import { updateIssue } from "@/app/actions/issues";
+import { createClient } from "@/utils/supabase/client";
+
 
 
 // We define the shape of the data so TypeScript can catch our typos
@@ -28,8 +30,76 @@ initialIssues:Issue[],
 profiles:Profile[]
 })
 {
+  // 1. Add the mounted state
+  const[isMounted,setIsMounted]=useState(false)
     //  put the issues in React State so we can update them instantly when dragged
   const [issues, setIssues] = useState<Issue[]>(initialIssues);
+
+  useEffect(()=>{
+    setIsMounted(true)
+  },[])
+
+  useEffect(()=>{
+    let supabaseClient:any
+    let channel:any
+
+    const setUpRadio = async ()=>{
+       supabaseClient = await createClient()
+
+      channel = supabaseClient
+        .channel('issues-sync')
+        .on(
+          `postgres_changes`,
+          {event:'*',schema:'public',table:'issues'},
+          (payload:any)=>{
+            console.log("Radio signal reached",payload);
+
+           if (payload.eventType === 'UPDATE') {
+                        setIssues((currentIssuesState) => {
+                            return currentIssuesState.map((currentIssue) => {
+                                if (currentIssue.id === payload.new.id) {
+                                    return payload.new as Issue; 
+                                } else {
+                                    return currentIssue;
+                                }
+                            });
+                        });
+                      }
+            if(payload.eventType === 'INSERT'){
+              setIssues((currentIssueState)=>[
+                ...currentIssueState,
+                payload.new
+              ])
+            }   
+            if(payload.eventType === 'DELETE'){
+              setIssues((currentIssueState)=>currentIssueState.filter((remove)=>remove.id !==payload.old.id)
+              )
+            }       
+          }
+        ).subscribe()
+
+    }
+    setUpRadio();
+
+    return ()=>{
+      if(supabaseClient && channel){
+        supabaseClient.removeChannel(channel)
+      }
+    }
+  },[])
+
+
+
+  // 3. If the browser hasn't taken over yet, render an empty skeleton or null.
+  // This guarantees the server render perfectly matches the initial client render.
+  if (!isMounted) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <p className="text-gray-500">Loading board...</p>
+      </div>
+    );
+  }
+  
 
     // safely default to empty array if no array there
     const openIssues= issues?.filter((i)=>i.status==="OPEN") || []

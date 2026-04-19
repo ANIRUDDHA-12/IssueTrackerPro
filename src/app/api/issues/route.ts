@@ -1,15 +1,15 @@
-import { createClient } from "@/utils/supabase/server";
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { NextResponse } from "next/server";
+
 
 export async function GET(request:Request) {
     const authHeader = request.headers.get("authorization")
-    const supabase = await createClient();
 
     if(!authHeader){
-        return NextResponse.json({
-            success:false,
-            status:401
-        })
+        return NextResponse.json(
+           { success:false},
+            {status:401}
+        )
     }
 
     const formatKey = "Bearer "+ process.env.DEVELOPER_API_KEY
@@ -21,8 +21,12 @@ export async function GET(request:Request) {
         )
     }
 
+    const supabaseAdmin =  createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
 
-    const { data: issues, error: dbError } = await supabase
+    const { data: issues, error: dbError } = await supabaseAdmin
         .from("issues")
         .select("*");
 
@@ -67,18 +71,21 @@ export async function POST(request: Request) {
     }
 
     // 4. THE VAULT (YOUR TURN)
-    const supabase = await createClient();
-
+    const supabaseAdmin = createSupabaseClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
     
     // Write the Supabase insert query here. 
     // Remember to insert an object with the title, description, and maybe a default status like "OPEN".
     // ...
-    const {data:userData,error:dbError} = await supabase
+    const {data:userData,error:dbError} = await supabaseAdmin
     .from("issues")
     .insert({
         title:title as string,
         description:description as string,
-        status:"OPEN"
+        status:"OPEN",
+        created_by: process.env.API_SYSTEM_USER_ID!
     })
     .select()
 
