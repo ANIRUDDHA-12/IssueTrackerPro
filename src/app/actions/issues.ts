@@ -1,16 +1,20 @@
 "use server"
 import { createClient } from "@/utils/supabase/server"
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
 import { resend } from "@/utils/resend"
+import { autoTagIssue } from "./ai"
 
 export type CreateIssueResult = {success:boolean,error?:string}
 
 export async function createIssue(formData:FormData){
     const title = formData.get('title') as string
     const description = formData.get('description') as string
-    const priority = formData.get('priority') as string
-    const type = formData.get('type') as string
+     const aiResponse = await autoTagIssue(title,description)
+
+     const finalPriority = aiResponse?.priority || "LOW";
+    const finalType = aiResponse?.type || "TASK";
+    // const priority = formData.get('priority') as string
+    // const type = formData.get('type') as string
 
     const supabase = await createClient()
     const {data,error:authError} = await supabase.auth.getUser()
@@ -22,8 +26,8 @@ export async function createIssue(formData:FormData){
     const { error}= await supabase.from('issues').insert({
         title: title as string,
         description: description as string,
-        priority: priority as string,
-        type: type as string,
+        priority: finalPriority as string,
+        type: finalType as string,
         created_by: data.user.id,
     })
     if(error){

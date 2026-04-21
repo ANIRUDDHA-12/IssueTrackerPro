@@ -1,9 +1,10 @@
 "use client"
 
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, redirect } from "next/navigation";
 import { useState } from "react"
 import { createIssue } from "@/app/actions/issues"
 import toast, {Toast} from "react-hot-toast"
+
 
 export default function CreateIssueModal(){
     // State to control if modal is visible
@@ -34,6 +35,7 @@ export default function CreateIssueModal(){
         // If successful, close the modal. (The Server Action handles the redirect/refresh.)
         toast.success("Closing")
         setIsLoading(false)
+        setIsOpen(false)
     }
     router.replace(pathname)
     }
@@ -94,7 +96,7 @@ export default function CreateIssueModal(){
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Priority</label>
                   <select
@@ -106,9 +108,9 @@ export default function CreateIssueModal(){
                     <option value="HIGH">High</option>
                     <option value="CRITICAL">Critical</option>
                   </select>
-                </div>
+                </div> */}
 
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-gray-700">Type</label>
                   <select
                     name="type"
@@ -119,7 +121,7 @@ export default function CreateIssueModal(){
                     <option value="TASK">Task</option>
                   </select>
                 </div>
-              </div>
+              </div> */}
 
               <div className="mt-6 flex justify-end space-x-3">
                 <button

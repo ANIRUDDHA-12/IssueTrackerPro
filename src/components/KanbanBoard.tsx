@@ -6,6 +6,7 @@ import { useState,useEffect } from "react"
 import KanbanColumn from "./KanbanColumn"
 import { updateIssue } from "@/app/actions/issues";
 import { createClient } from "@/utils/supabase/client";
+import { patchFetch } from "next/dist/server/app-render/entry-base";
 
 
 
@@ -65,12 +66,25 @@ profiles:Profile[]
                             });
                         });
                       }
-            if(payload.eventType === 'INSERT'){
-              setIssues((currentIssueState)=>[
-                ...currentIssueState,
-                payload.new
-              ])
-            }   
+            if (payload.eventType === 'INSERT') {
+    setIssues((currentIssueState) => {
+        // 1. Check if the ticket is already in our React state
+        const ticketAlreadyExists = currentIssueState.some(
+            (issue) => issue.id === payload.new.id
+        );
+
+        // 2. If Next.js already fetched it, ignore the radio signal!
+        if (ticketAlreadyExists) {
+            return currentIssueState; 
+        }
+
+        // 3. If it's genuinely a new ticket (e.g. from another user's screen), add it!
+        return [
+            ...currentIssueState,
+            payload.new
+        ];
+    });
+}
             if(payload.eventType === 'DELETE'){
               setIssues((currentIssueState)=>currentIssueState.filter((remove)=>remove.id !==payload.old.id)
               )
