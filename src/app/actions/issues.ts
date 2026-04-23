@@ -55,6 +55,21 @@ export async function updateIssue(issueId:string,newStatus:string){
     if(error){
         return({success:false,error:error.message})
     }
+
+    if(newStatus === "DONE"){
+        const message = {
+            content: `TASK COMPLETED TICKET ${issueId} WAS JUST MOVED TO DONE`
+        }
+        try{
+            await fetch(process.env.DISCORD_WEBHOOK_URL!,{
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify(message),
+            })
+        }catch(error){
+            console.log("Failed to ping discord",error)
+        }
+    }
         revalidatePath("/dashboard")
     return {success:true}
 }
@@ -66,6 +81,17 @@ export async function deleteIssue(issueId:string){
 
     if(authError || !data.user){
         return({success:false,error:"Unauthorized"})
+    }
+
+    const {data:adminData,error:adminError} = await supabase
+    .from("admins")
+    .select("user_id")
+    .eq("user_id",data.user.id)
+    .single()
+
+    console.log("BOUNCER DATA:", adminData, "BOUNCER ERROR:", adminError)
+    if (adminError || !adminData) {
+        return { success: false, error: "Access Denied: Admins Only" };
     }
 
     const {error} = await supabase
@@ -93,11 +119,13 @@ export async function updateIssueAssignee(issueId: string, assigneeId: string | 
     const { error } = await supabase
         .from("issues")
         .update({ assigned_to: assigneeId })
-        .eq("id", issueId);
+        .eq("id", issueId);  
 
     if (error) {
         return { success: false, error: error.message };
     }
+
+
 
     const {data:profile,error:profileError} = await supabase
         .from("profiles")
@@ -109,16 +137,16 @@ export async function updateIssueAssignee(issueId: string, assigneeId: string | 
     console.error("Could not fetch profile for email notification.")
   }
 
-    try{
-        await resend.emails.send({
-            from:"Issues Tracker <onboarding@resend.dev>",
-            to:"",
-            subject:"New Assignment",
-            html:"<p>Hello you've been assigned a new issue likewise.</p>"
-        })
-    }catch(emailError){
-        console.error("Resend error:", emailError)
-    }
+    // try{
+    //     await resend.emails.send({
+    //         from:"Issues Tracker <onboarding@resend.dev>",
+    //         to:"",
+    //         subject:"New Assignment",
+    //         html:"<p>Hello you've been assigned a new issue likewise.</p>"
+    //     })
+    // }catch(emailError){
+    //     console.error("Resend error:", emailError)
+    // }
     // 3. The Refresh
     revalidatePath("/dashboard");
     return { success: true };
