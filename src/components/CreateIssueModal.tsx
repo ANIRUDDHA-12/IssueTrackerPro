@@ -1,9 +1,9 @@
 "use client"
 
-import { useRouter, usePathname, redirect } from "next/navigation";
-import { useState } from "react"
-import { createIssue } from "@/app/actions/issues"
-import toast, {Toast} from "react-hot-toast"
+import { useRouter, usePathname } from "next/navigation";
+import { useState, useEffect } from "react"; // Added useEffect
+import { createIssue, searchIssues, SearchResult } from "@/app/actions/issues"; 
+import toast from "react-hot-toast";
 
 
 export default function CreateIssueModal(){
@@ -11,6 +11,33 @@ export default function CreateIssueModal(){
     const [ isOpen,setIsOpen]= useState(false)
     const [isLoading,setIsLoading]=useState(false)
     const[error,setError]=useState<string | null>(null)
+
+    // for duplicate detection state
+    const[title,setTitle]= useState("")
+    const [duplicates, setDuplicates] = useState<SearchResult[]>([]);
+    const [isChecking, setIsChecking] = useState(false);
+
+    useEffect(()=>{
+      if(title.length<5){
+        setDuplicates([])
+        return
+      }
+
+      const delayTimer = setTimeout(async ()=>{
+        setIsChecking(true)
+        const results = await searchIssues(title)
+        console.log("RAW AI RESULTS:", results);
+
+        if(results){
+          // filtering for 80% matches amongst present tickets
+          const highMatches = results.filter(ticket=>ticket.similarity>=0.60)
+          console.log("2. FILTERED MATCHES:", highMatches);
+          setDuplicates(highMatches)
+          setIsChecking(false)
+        }
+        return ()=>clearTimeout(delayTimer)
+      },800)
+    },[title])
 
     // 1. Initialize the router
   const router = useRouter();
@@ -74,16 +101,40 @@ export default function CreateIssueModal(){
 
             {/* 4. The Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
+
               <div>
-                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <label className="block text-sm font-medium text-gray-700">
+                    Title {isChecking && <span className="text-xs text-blue-500 font-normal ml-2">AI is analyzing...</span>}
+                </label>
                 <input
                   type="text"
                   name="title"
                   required
+                  value={title} 
+                  onChange={(e) => setTitle(e.target.value)} 
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
                   placeholder="e.g., Login button is broken"
                 />
               </div>
+
+              {/* --- AI DUPLICATE WARNING BANNER --- */}
+              {duplicates.length > 0 && (
+                <div className="rounded bg-orange-50 p-4 border border-orange-200">
+                  <h3 className="text-sm font-bold text-orange-800 flex items-center gap-2">
+                    ⚠️ Possible Duplicate Detected
+                  </h3>
+                  <ul className="mt-2 flex flex-col gap-2">
+                      {duplicates.map(ticket => (
+                          <li key={ticket.id} className="text-xs bg-white p-2 rounded border border-orange-100 flex justify-between items-center text-gray-800">
+                              <span className="font-semibold truncate pr-2">{ticket.title}</span>
+                              <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded-full whitespace-nowrap">
+                                  {Math.round(ticket.similarity * 100)}% Match
+                              </span>
+                          </li>
+                      ))}
+                  </ul>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">Description</label>
@@ -95,33 +146,6 @@ export default function CreateIssueModal(){
                   placeholder="Describe the issue in detail..."
                 />
               </div>
-
-              {/* <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Priority</label>
-                  <select
-                    name="priority"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
-                  >
-                    <option value="LOW">Low</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="HIGH">High</option>
-                    <option value="CRITICAL">Critical</option>
-                  </select>
-                </div> */}
-
-                {/* <div>
-                  <label className="block text-sm font-medium text-gray-700">Type</label>
-                  <select
-                    name="type"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
-                  >
-                    <option value="BUG">Bug</option>
-                    <option value="FEATURE">Feature</option>
-                    <option value="TASK">Task</option>
-                  </select>
-                </div>
-              </div> */}
 
               <div className="mt-6 flex justify-end space-x-3">
                 <button
