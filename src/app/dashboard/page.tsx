@@ -8,6 +8,9 @@ import IssueCard from "@/components/IssueCard";
 import BoardFilters from "@/components/BoardFilters";
 import KanbanBoard from "@/components/KanbanBoard";
 import Comments from "@/components/Comments";
+import { searchIssues } from "../actions/issues";
+import SearchBox from "@/components/SearchBox";
+// import { backfillOldTickets } from "../actions/issues";
 
 type SearchParams = Promise<{[key:string]:string | undefined}> 
 
@@ -17,6 +20,10 @@ export default async function DashboardPage(props:{searchParams:SearchParams}) {
   const query = searchParams?.query || "";
   const assignee = searchParams?.assignee || "";
   const selectedIssueId = searchParams?.selectedIssue || null;
+
+  // TEMPORARY TEST CODE
+const testResults = await searchIssues("login");
+console.log("SEMANTIC SEARCH RESULTS:", testResults);
 
   const supabase = await createClient()
 
@@ -87,12 +94,13 @@ export default async function DashboardPage(props:{searchParams:SearchParams}) {
           </div>
         </div>
 
-         <BoardFilters profiles={profiles || []} /> 
+         {/* <BoardFilters profiles={profiles || []} />  */}
         {error && (
           <div className="mb-8 rounded border border-red-200 bg-red-50 p-4 text-red-600">
             Error loading issues: {error.message}
           </div>
         )}
+        <SearchBox />
 
         <KanbanBoard initialIssues={issues || []} profiles={profiles || []} />
 

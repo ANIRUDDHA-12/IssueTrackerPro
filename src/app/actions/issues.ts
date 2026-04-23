@@ -3,6 +3,7 @@ import { createClient } from "@/utils/supabase/server"
 import { revalidatePath } from "next/cache"
 import { resend } from "@/utils/resend"
 import { autoTagIssue } from "./ai"
+import {generateCordinates} from "./ai"
 
 export type CreateIssueResult = {success:boolean,error?:string}
 
@@ -10,6 +11,9 @@ export async function createIssue(formData:FormData){
     const title = formData.get('title') as string
     const description = formData.get('description') as string
      const aiResponse = await autoTagIssue(title,description)
+
+     const embedText = title + ":" + description
+      const embeddingCoordinates = await generateCordinates(embedText)
 
      const finalPriority = aiResponse?.priority || "LOW";
     const finalType = aiResponse?.type || "TASK";
@@ -29,6 +33,7 @@ export async function createIssue(formData:FormData){
         priority: finalPriority as string,
         type: finalType as string,
         created_by: data.user.id,
+        embedding:embeddingCoordinates
     })
     if(error){
     return({success:false,error:error.message})
@@ -150,6 +155,77 @@ export async function updateIssueAssignee(issueId: string, assigneeId: string | 
     // 3. The Refresh
     revalidatePath("/dashboard");
     return { success: true };
+}
+
+export interface SearchResult{
+    id:string,
+    title:string,
+    description:string,
+    priority:string,
+    status:string,
+    similarity:number
+}
+
+export async function searchIssues(seearchQuery:string):Promise<SearchResult [] | null>{
+    const supabase = await createClient()
+
+    try{
+        const queryCoordinates = await generateCordinates(seearchQuery)
+
+        const {data,error} = await supabase.rpc('match_issues',{
+            query_embedding:queryCoordinates,
+            match_threshold: -0.1,
+            match_count: 5
+        })
+        if(error){
+            console.error("semantic search failed",error)
+            return null
+        }
+        return data as SearchResult[]
+    }catch(error){
+        console.error("Semantic Search Crashed:", error);
+        return null
+    }
+}   
 
 
+
+export async function backfillOldTickets() {
+    const supabase = await createClient();
+
+    // STEP 1: Fetch the Ghosts
+    // Write a Supabase query to SELECT all columns FROM "issues" 
+    // WHERE the "embedding" column IS null.
+    const { data: oldTickets, error: fetchError } = await supabase
+    .from("issues")
+    .select("*")
+    .is("embedding",null)
+
+    if (fetchError || !oldTickets) return { success: false, error: "Failed to fetch" };
+    if (oldTickets.length === 0) return { success: true, message: "No old tickets found!" };
+
+    // STEP 2: The Loop
+    for (const ticket of oldTickets) {
+        
+        // STEP 3: The Translation
+        const textToEmbed = ticket.title + " : " + ticket.description;
+        const coordinates = await generateCordinates(textToEmbed); // Wait for the AI!
+
+        // STEP 4: The Precision Update
+        // Write a Supabase query to UPDATE the "issues" table.
+        // Set the { embedding: coordinates }.
+        // Make sure you use .eq("id", ticket.id) so you don't overwrite everything!
+        const { error: updateError } = await supabase
+        .from("issues")
+        .update({embedding:coordinates})
+        .eq("id",ticket.id)
+
+        if (updateError) {
+            console.error(`Failed to update ticket ${ticket.id}`);
+        } else {
+            console.log(`Successfully embedded ticket: ${ticket.title}`);
+        }
+    }
+
+    return { success: true, message: "Backfill Complete!" };
 }
