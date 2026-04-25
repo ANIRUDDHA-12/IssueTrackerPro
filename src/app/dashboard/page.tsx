@@ -11,6 +11,9 @@ import Comments from "@/components/Comments";
 import { searchIssues } from "../actions/issues";
 import SearchBox from "@/components/SearchBox";
 // import { backfillOldTickets } from "../actions/issues";
+import { projectManager } from "../actions/ai";
+// import TestRAGButton from "@/components/TestRAGButton";
+import Chatbot from "@/components/ChatBot";
 
 type SearchParams = Promise<{[key:string]:string | undefined}> 
 
@@ -134,6 +137,7 @@ console.log("SEMANTIC SEARCH RESULTS:", testResults);
         )}
 
       </div>
+      <Chatbot />
     </div>
   );
 }

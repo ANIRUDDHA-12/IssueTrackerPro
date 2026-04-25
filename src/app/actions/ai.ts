@@ -2,6 +2,7 @@
 
 import Groq from "groq-sdk"
 import {pipeline,env} from "@xenova/transformers"
+import { searchIssues } from "./issues"
 env.allowLocalModels= true
 env.useBrowserCache=false
 
@@ -83,4 +84,58 @@ export  async function generateCordinates(text:string): Promise<number[] | null>
         return Array.from({ length: 384 }, () => Math.random() * 2 - 1);
     }
 }
+
+export async function projectManager(userQuestion:string){
+    try{
+        console.log(`[RAG] 1 User asked the question :${userQuestion}`)
+    const searchResults = await searchIssues(userQuestion)
+
+    let contextText = "No relevant tickets found in the database.";
+        
+    if(searchResults && searchResults.length >0){
+        console.log(`[RAG] 2. Found ${searchResults.length} relevant tickets.`);
+        contextText = searchResults.map((ticket)=>`
+            Ticket Title : ${ticket.title}
+            Status:${ticket.status}
+            Description:${ticket.description}
+            Match Score:${Math.round(ticket.similarity*100)}%        
+        `
+        ).join("\n---\n")
+    }else {
+            console.log("[RAG] 2. No tickets matched the math.");
+        }
+
+      const systemPrompt = `
+            You are a highly efficient Project Manager Assistant for an Issue Tracker.
+            Your job is to answer the user's question based ONLY on the provided database tickets.
+            
+            Rules:
+            1. Be concise, professional, and helpful.
+            2. If the user asks about something that is NOT in the provided tickets, you MUST reply: "I'm sorry, I don't see any tickets related to that in the current database." Do not guess or make up features.
+            3. Mention the specific ticket titles or statuses if it helps answer the question.
+            
+            DATABASE TICKETS:
+            ${contextText}
+        `;
+        
+      console.log("[RAG] 3. Sending Augmented Prompt to Groq...");
+      
+      const chatCompletetion = await groq.chat.completions.create({
+        messages:[
+            { role: "system", content: systemPrompt },
+                { role: "user", content: userQuestion }
+        ],
+        model:"llama-3.1-8b-instant",
+        temperature:0.3
+      })
+      const aiResponse = chatCompletetion.choices[0]?.message.content
+      console.log("RAG 4.Response Recieved")
+      
+      return{success:true,answer:aiResponse}
+    }catch (error) {
+        console.error("RAG Pipeline Failed:", error);
+        return { success: false, answer: "I'm having trouble connecting to the database brain right now. Please try again." };
+    }
+}
+
 
