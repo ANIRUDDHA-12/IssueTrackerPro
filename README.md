@@ -1,4 +1,6 @@
 IssueTracker Pro
+
+
 An enterprise-grade, AI-native project management platform built with Next.js and Supabase. It features a fully serverless AI architecture for semantic search, intelligent auto-tagging, an embedded RAG (Retrieval-Augmented Generation) chatbot, and real-time state management.
 
 🚀 Key Features
