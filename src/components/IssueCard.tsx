@@ -41,30 +41,30 @@ export default function IssueCard({ issue,profiles }: { issue: Issue,profiles:Pr
     transform: CSS.Translate.toString(transform),
   };
   return (
-    <div className="flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md" ref={setNodeRef} style={style} {...listeners} {...attributes}>
+    <div className="flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md" ref={setNodeRef} style={style} {...listeners} {...attributes}>
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <span className="rounded bg-gray-100 px-2 py-1 text-xs font-semibold text-gray-600">
+          <span className="rounded bg-gray-100 px-2 py-1 text-xs font-semibold text-slate-500">
             {issue.type}
           </span>
           <StatusDropdown issueId={issue.id} currentStatus={issue.status} />
         </div>
         
-        <h3 className="mb-1 text-lg font-bold text-gray-900 cursor-pointer hover:text-blue-600 hover:underline" onPointerDown={(e)=>{handleOpenModal(e)}}>{issue.title}</h3>
-        <p className="mb-3 line-clamp-2 text-sm text-gray-500">{issue.description}</p>
+        <h3 className="mb-1 text-lg font-bold text-slate-900 cursor-pointer hover:text-blue-600 hover:underline" onPointerDown={(e)=>{handleOpenModal(e)}}>{issue.title}</h3>
+        <p className="mb-3 line-clamp-2 text-sm text-slate-500">{issue.description}</p>
         
         {/* The New Assignee Dropdown! */}
         <div className="flex items-center space-x-2">
-           <span className="text-xs text-gray-400">Assignee:</span>
+           <span className="text-xs text-slate-500">Assignee:</span>
            <AssigneeDropdown issueId={issue.id} currentAssigneeId={issue.assigned_to} profiles={profiles} />
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t pt-4">
+      <div className="mt-4 flex items-center justify-between border-t pt-4 border-gray-200">
         <span className={`text-xs font-bold ${
           issue.priority === 'CRITICAL' ? 'text-red-600' : 
           issue.priority === 'HIGH' ? 'text-orange-500' : 
-          'text-gray-500'
+          'text-slate-500'
         }`}>
           {issue.priority} PRIORITY
         </span>
