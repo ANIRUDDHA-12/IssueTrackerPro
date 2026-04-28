@@ -36,12 +36,12 @@ export default function AssigneeDropdown({
       value={currentAssigneeId || "UNASSIGNED"}
       onChange={handleChange}
       disabled={isPending}
-      className="max-w-30 truncate rounded border-none bg-gray-50 px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 focus:ring-0 disabled:opacity-50"
+      className="max-w-30 truncate border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-md px-2 py-1 text-xs text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      <option value="UNASSIGNED">Unassigned</option>
+      <option value="UNASSIGNED" className="bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-700">Unassigned</option>
       {/* We loop through the profiles from the database to create the options */}
       {profiles.map((profile) => (
-        <option key={profile.id} value={profile.id}>
+        <option key={profile.id} value={profile.id} className="bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-700">
           {profile.email}
         </option>
       ))}

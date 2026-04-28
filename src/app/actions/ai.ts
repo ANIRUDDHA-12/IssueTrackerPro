@@ -56,32 +56,41 @@ export async function autoTagIssue(title:string,description:string): Promise<AIT
 
 
 
-export  async function generateCordinates(text:string): Promise<number[] | null>{
-    try{
-        // If the AI isn't in memory yet, download/load it!
-        // We use 'all-MiniLM-L6-v2' because it natively outputs exactly 384 dimensions.
-        if(!globalForAI.embeddingPipeline){
-            console.log("Loading Neural Network Into Server RAM..")
-            globalForAI.embeddingPipeline = await pipeline(
-                'feature-extraction',
-                'Xenova/all-MiniLM-L6-v2'
-            )
-            console.log("Loaded Sucessfully")
+export async function generateCordinates(text: string): Promise<number[] | null> {
+    try {
+        // The NEW Hugging Face Router API Endpoint for Feature Extraction
+        const response = await fetch(
+            "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction",
+            {
+                headers: {
+                    Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+                    "Content-Type": "application/json",
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    inputs: [text], // The new pipeline strictly requires an array
+                    options: { wait_for_model: true }
+                }),
+            }
+        );
+
+        if (!response.ok) {
+            console.error("HuggingFace API Error:", await response.text());
+            return null;
         }
-        // Send the text into the AI
-        const output = await globalForAI.embeddingPipeline(text, { 
-            pooling: 'mean', 
-            normalize: true 
-        });
 
-        const embeddingArray = Array.from(output.data) as number[]
+        const result = await response.json();
+        
+        // Safely extract the vector array depending on how HF parses it
+        if (Array.isArray(result) && Array.isArray(result[0])) {
+            return result[0] as number[];
+        }
+        
+        return result as number[];
 
-        return embeddingArray
-    }
-    catch(error){
-        console.error("Local AI Embedding Failed:", error);
-        // Fallback to random math ONLY if the AI completely crashes
-        return Array.from({ length: 384 }, () => Math.random() * 2 - 1);
+    } catch (error) {
+        console.error("Failed to generate embedding via HuggingFace:", error);
+        return null;
     }
 }
 

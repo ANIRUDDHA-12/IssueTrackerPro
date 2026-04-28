@@ -27,16 +27,12 @@ export default function StatusDropdown({
       value={currentStatus}
       onChange={handleChange}
       disabled={isPending}
-      className={`rounded px-2 py-1 text-xs font-semibold focus:outline-none disabled:opacity-50 ${
-        currentStatus === 'DONE' ? 'bg-green-100 text-green-700' :
-        currentStatus === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' :
-        'bg-yellow-100 text-yellow-800'
-      }`}
+      className="border border-gray-200 bg-gray-50 hover:bg-gray-100 rounded-md px-2 py-1 text-xs text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      <option value="OPEN">OPEN</option>
-      <option value="IN_PROGRESS">IN_PROGRESS</option>
-      <option value="IN_REVIEW">IN_REVIEW</option>
-      <option value="DONE">DONE</option>
+      <option value="OPEN" className="bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-700">OPEN</option>
+      <option value="IN_PROGRESS" className="bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-700">IN_PROGRESS</option>
+      <option value="IN_REVIEW" className="bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-700">IN_REVIEW</option>
+      <option value="DONE" className="bg-white text-slate-700 hover:bg-indigo-50 hover:text-indigo-700">DONE</option>
     </select>
   );
 }

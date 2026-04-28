@@ -72,29 +72,29 @@ export default function CreateIssueModal(){
       {/* 1. The Trigger Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-all duration-200"
       >
         + New Issue
       </button>
 
       {/* 2. The Modal Overlay (Only renders if isOpen is true) */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
           
           {/* 3. The Modal Container */}
-          <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-2xl border border-gray-200">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">Create New Issue</h2>
+              <h2 className="text-xl font-bold text-slate-900">Create New Issue</h2>
               <button 
                 onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-slate-500 hover:text-slate-700 transition-colors"
               >
                 ✕
               </button>
             </div>
 
             {error && (
-              <div className="mb-4 rounded bg-red-50 p-3 text-sm text-red-600">
+              <div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
                 {error}
               </div>
             )}
@@ -103,8 +103,8 @@ export default function CreateIssueModal(){
             <form onSubmit={handleSubmit} className="space-y-4">
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Title {isChecking && <span className="text-xs text-blue-500 font-normal ml-2">AI is analyzing...</span>}
+                <label className="block text-sm font-medium text-slate-900">
+                    Title {isChecking && <span className="text-xs text-indigo-500 font-normal ml-2">AI is analyzing...</span>}
                 </label>
                 <input
                   type="text"
@@ -112,20 +112,20 @@ export default function CreateIssueModal(){
                   required
                   value={title} 
                   onChange={(e) => setTitle(e.target.value)} 
-                  className="mt-1 block w-full rounded-md border border-gray-200 px-3 py-2 text-black shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="mt-1 block w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
                   placeholder="e.g., Login button is broken"
                 />
               </div>
 
               {/* --- AI DUPLICATE WARNING BANNER --- */}
               {duplicates.length > 0 && (
-                <div className="rounded bg-orange-50 p-4 border border-orange-200">
+                <div className="rounded-lg bg-orange-50 p-4 border border-orange-200">
                   <h3 className="text-sm font-bold text-orange-800 flex items-center gap-2">
                     ⚠️ Possible Duplicate Detected
                   </h3>
                   <ul className="mt-2 flex flex-col gap-2">
                       {duplicates.map(ticket => (
-                          <li key={ticket.id} className="text-xs bg-white p-2 rounded border border-orange-100 flex justify-between items-center text-gray-800">
+                          <li key={ticket.id} className="text-xs bg-white p-2 rounded-lg border border-orange-100 flex justify-between items-center text-slate-800">
                               <span className="font-semibold truncate pr-2">{ticket.title}</span>
                               <span className="bg-orange-200 text-orange-800 px-2 py-1 rounded-full whitespace-nowrap">
                                   {Math.round(ticket.similarity * 100)}% Match
@@ -137,12 +137,12 @@ export default function CreateIssueModal(){
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Description</label>
+                <label className="block text-sm font-medium text-slate-900">Description</label>
                 <textarea
                   name="description"
                   required
                   rows={4}
-                  className="mt-1 block w-full rounded-md border border-gray-200 px-3 py-2 text-black shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="mt-1 block w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
                   placeholder="Describe the issue in detail..."
                 />
               </div>
@@ -151,14 +151,14 @@ export default function CreateIssueModal(){
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-slate-500 hover:bg-gray-100 transition-all duration-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:bg-blue-400"
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:bg-indigo-400 transition-all duration-200"
                 >
                   {isLoading ? "Creating..." : "Create Issue"}
                 </button>

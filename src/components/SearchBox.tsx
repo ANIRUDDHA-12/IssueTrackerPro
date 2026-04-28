@@ -23,18 +23,18 @@ export default function SearchBox(){
     return (
         <div className="mb-8 w-full max-w-2xl">
             {/* The Search Form */}
-            <form onSubmit={handleSearch} className="flex gap-2">
+            <form onSubmit={handleSearch} className="relative flex items-center">
                 <input
                     type="text"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Ask the AI to find a ticket (e.g. 'auth is broken')..."
-                    className="flex-1 p-3 rounded-lg border border-gray-300 text-black"
+                    className="w-full p-3 pr-36 rounded-lg border border-gray-300 shadow-sm text-sm text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all duration-200"
                 />
                 <button 
                     type="submit" 
                     disabled={isSearching}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400"
+                    className="absolute right-1.5 top-1.5 bottom-1.5 px-4 flex items-center justify-center bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 disabled:bg-indigo-400 transition-all duration-200"
                 >
                     {isSearching ? "Thinking..." : "AI Search"}
                 </button>
