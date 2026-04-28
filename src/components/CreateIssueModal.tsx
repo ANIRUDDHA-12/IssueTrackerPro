@@ -79,10 +79,10 @@ export default function CreateIssueModal(){
 
       {/* 2. The Modal Overlay (Only renders if isOpen is true) */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           
           {/* 3. The Modal Container */}
-          <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
+          <div className="w-full max-w-lg rounded-lg bg-white p-6 shadow-2xl">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">Create New Issue</h2>
               <button 
@@ -112,7 +112,7 @@ export default function CreateIssueModal(){
                   required
                   value={title} 
                   onChange={(e) => setTitle(e.target.value)} 
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border border-gray-200 px-3 py-2 text-black shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="e.g., Login button is broken"
                 />
               </div>
@@ -142,7 +142,7 @@ export default function CreateIssueModal(){
                   name="description"
                   required
                   rows={4}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-black shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
+                  className="mt-1 block w-full rounded-md border border-gray-200 px-3 py-2 text-black shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="Describe the issue in detail..."
                 />
               </div>

@@ -188,6 +188,24 @@ export async function searchIssues(seearchQuery:string):Promise<SearchResult [] 
     }
 }   
 
+export async function getNearIssues(id:string,title:string,description:string):Promise<SearchResult [] | null>{
+    const supabase  = await createClient()
+
+    const queryEmbedding = await generateCordinates(title + " : "+ description)
+     
+    const{data,error} = await supabase.rpc('match_issues',{
+        query_embedding:queryEmbedding,
+        match_threshold:0.6,
+        match_count:5,
+        current_issue_id:id,
+    })
+    if(error){
+        console.error("failed to find similar items",error)
+        return null
+    }
+    return data as SearchResult[]
+}
+
 
 
 export async function backfillOldTickets() {

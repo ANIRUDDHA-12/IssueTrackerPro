@@ -109,7 +109,7 @@ console.log("SEMANTIC SEARCH RESULTS:", testResults);
 
         {/* THE NEW ISSUE DETAILS MODAL OVERLAY */}
         {selectedIssueData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <div className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-2xl">
                
                <div className="flex justify-between items-center mb-4">
