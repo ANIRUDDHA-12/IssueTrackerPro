@@ -174,7 +174,7 @@ export async function searchIssues(seearchQuery:string):Promise<SearchResult [] 
 
         const {data,error} = await supabase.rpc('match_issues',{
             query_embedding:queryCoordinates,
-            match_threshold: -0.1,
+            match_threshold: 0.5,
             match_count: 5
         })
         if(error){
