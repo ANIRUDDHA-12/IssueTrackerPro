@@ -58,7 +58,6 @@ export async function autoTagIssue(title:string,description:string): Promise<AIT
 
 export async function generateCordinates(text: string): Promise<number[] | null> {
     try {
-        // The NEW Hugging Face Router API Endpoint for Feature Extraction
         const response = await fetch(
             "https://router.huggingface.co/hf-inference/models/sentence-transformers/all-MiniLM-L6-v2/pipeline/feature-extraction",
             {
@@ -68,7 +67,7 @@ export async function generateCordinates(text: string): Promise<number[] | null>
                 },
                 method: "POST",
                 body: JSON.stringify({
-                    inputs: [text], // The new pipeline strictly requires an array
+                    inputs: [text], 
                     options: { wait_for_model: true }
                 }),
             }
@@ -81,7 +80,7 @@ export async function generateCordinates(text: string): Promise<number[] | null>
 
         const result = await response.json();
         
-        // Safely extract the vector array depending on how HF parses it
+
         if (Array.isArray(result) && Array.isArray(result[0])) {
             return result[0] as number[];
         }
