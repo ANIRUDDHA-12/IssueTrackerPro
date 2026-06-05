@@ -599,4 +599,4 @@ Built with cutting-edge AI/ML tools:
 
 ---
 
-**Made with ❤️ by Aniruddha ** | *Bringing intelligence to issue tracking*
+**Made with ❤️ by Aniruddha** | *Bringing intelligence to issue tracking*
