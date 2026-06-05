@@ -595,8 +595,8 @@ Built with cutting-edge AI/ML tools:
 
 - **Issues & Bugs**: Open a GitHub issue
 - **Discussions**: Start a discussion thread
-- **Email**: [your-email@example.com]
+- **Email**: [payasaniruddhaxthc@gmail.com]
 
 ---
 
-**Made with ❤️ by [Your Name]** | *Bringing intelligence to issue tracking*
+**Made with ❤️ by Aniruddha ** | *Bringing intelligence to issue tracking*
