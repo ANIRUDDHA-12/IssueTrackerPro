@@ -14,6 +14,7 @@ import SearchBox from "@/components/SearchBox";
 import { projectManager } from "../actions/ai";
 // import TestRAGButton from "@/components/TestRAGButton";
 import Chatbot from "@/components/ChatBot";
+import Link from "next/link";
 
 type SearchParams = Promise<{[key:string]:string | undefined}> 
 
@@ -119,12 +120,13 @@ console.log("SEMANTIC SEARCH RESULTS:", testResults);
                   <h2 className="text-2xl font-bold text-gray-900">{selectedIssueData.title}</h2>
                   
                   {/* The Close Button! */}
-                  <a 
-                    href="/dashboard" 
+                  <Link
+                    href="/dashboard"
+                    scroll={false} 
                     className="text-gray-400 hover:text-gray-800 font-medium"
                   >
                     Close
-                  </a>
+                  </Link>
                </div>
                
                <p className="text-gray-600 mb-6">{selectedIssueData.description}</p>

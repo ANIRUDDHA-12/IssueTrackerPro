@@ -91,7 +91,7 @@ export default function  LoginFormData(){
             <div className="text-center mt-4">
               <span className="text-sm text-slate-500">
                 Don't have an account?{" "}
-                <a href="/signup" className="text-slate-500 hover:text-indigo-600 transition-colors font-medium">
+                <a href="/signUp" className="text-slate-500 hover:text-indigo-600 transition-colors font-medium">
                   Sign up here
                 </a>
               </span>
