@@ -71,8 +71,9 @@ export default function CreateIssueModal(){
     <>
       {/* 1. The Trigger Button */}
       <button
+        type="button"
         onClick={() => setIsOpen(true)}
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-all duration-200"
+        className=" relative z-10 cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-all duration-200"
       >
         + New Issue
       </button>
