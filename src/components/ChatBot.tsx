@@ -55,7 +55,7 @@ export default function Chatbot() {
     return (
         <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end pointer-events-none">
             {/* THE CHAT WINDOW */}
-            <div className={`mb-4 w-80 md:w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden transition-all duration-300 ease-out origin-bottom-right ${isOpen ? "scale-100 opacity-100" : "scale-0 opacity-0 pointer-events-none mb-0 h-0"}`}>
+            <div className={`pointer-events-auto mb-4 w-80 md:w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden transition-all duration-300 ease-out origin-bottom-right ${isOpen ? "scale-100 opacity-100" : "scale-0 opacity-0 pointer-events-none mb-0 h-0"}`}>
                 
                 {/* Header */}
                 <div className="bg-indigo-600 p-4 flex justify-between items-center text-white">
@@ -63,7 +63,7 @@ export default function Chatbot() {
                         <h3 className="font-bold text-sm">AI Project Manager</h3>
                         <p className="text-xs text-indigo-200">Powered by RAG & Groq</p>
                     </div>
-                    <button onClick={() => setIsOpen(false)} className="hover:text-gray-200">
+                    <button onClick={() => setIsOpen(false)} className="hover:text-gray-200  cursor-pointer">
                         ✕
                     </button>
                 </div>
@@ -118,7 +118,7 @@ export default function Chatbot() {
             {!isOpen && (
                 <button 
                     onClick={() => setIsOpen(true)}
-                    className="w-14 h-14 bg-indigo-600 rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-transform hover:scale-105"
+                    className="pointer-events-auto cursor-pointer w-14 h-14 bg-indigo-600 rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-transform hover:scale-105"
                 >
                     {/* A simple chat icon using SVG */}
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
