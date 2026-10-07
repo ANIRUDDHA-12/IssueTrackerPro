@@ -133,7 +133,7 @@ export async function projectManager(userQuestion:string){
             { role: "system", content: systemPrompt },
                 { role: "user", content: userQuestion }
         ],
-        model:"llama-3.1-8b-instant",
+        model:"qwen/qwen3.8-27b",
         temperature:0.3
       })
       const aiResponse = chatCompletetion.choices[0]?.message.content
